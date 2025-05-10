@@ -1,0 +1,175 @@
+import java.util.*;
+
+public class StudentGradebookApp {
+
+    // --- Student class ---
+    static class Student {
+        private String id;
+        private String name;
+        private Map<String, Double> subjects;
+
+        public Student(String id, String name) {
+            this.id = id;
+            this.name = name;
+            this.subjects = new HashMap<>();
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void addGrade(String subject, double grade) {
+            subjects.put(subject, grade);
+        }
+
+        public void editGrade(String subject, double grade) {
+            if (subjects.containsKey(subject)) {
+                subjects.put(subject, grade);
+            }
+        }
+
+        public void removeGrade(String subject) {
+            subjects.remove(subject);
+        }
+
+        public Map<String, Double> getGrades() {
+            return subjects;
+        }
+
+        public double getAverage() {
+            if (subjects.isEmpty()) return 0.0;
+            double sum = 0;
+            for (double grade : subjects.values()) {
+                sum += grade;
+            }
+            return sum / subjects.size();
+        }
+
+        public void displayReport() {
+            System.out.println("ID: " + id + ", Name: " + name);
+            for (Map.Entry<String, Double> entry : subjects.entrySet()) {
+                System.out.println("  " + entry.getKey() + ": " + entry.getValue());
+            }
+            System.out.printf("  Average Score: %.2f\n", getAverage());
+        }
+    }
+
+    // --- Gradebook class ---
+    static class Gradebook {
+        private Map<String, Student> students;
+
+        public Gradebook() {
+            students = new HashMap<>();
+        }
+
+        public void addStudent(String id, String name) {
+            if (!students.containsKey(id)) {
+                students.put(id, new Student(id, name));
+                System.out.println("Student added.");
+            } else {
+                System.out.println("Student ID already exists.");
+            }
+        }
+
+        public void editStudent(String id, String newName) {
+            Student s = students.get(id);
+            if (s != null) {
+                students.put(id, new Student(id, newName));
+                System.out.println("Student updated.");
+            } else {
+                System.out.println("Student not found.");
+            }
+        }
+
+        public void removeStudent(String id) {
+            if (students.remove(id) != null) {
+                System.out.println("Student removed.");
+            } else {
+                System.out.println("Student not found.");
+            }
+        }
+
+        public void addGrade(String id, String subject, double grade) {
+            Student s = students.get(id);
+            if (s != null) {
+                s.addGrade(subject, grade);
+                System.out.println("Grade added.");
+            } else {
+                System.out.println("Student not found.");
+            }
+        }
+
+        public void displayAllReports() {
+            for (Student s : students.values()) {
+                s.displayReport();
+                System.out.println("--------------");
+            }
+        }
+    }
+
+    // --- Main Method ---
+    public static void main(String[] args) {
+        Gradebook gradebook = new Gradebook();
+        Scanner sc = new Scanner(System.in);
+        int choice;
+
+        do {
+            System.out.println("\n--- Student Gradebook Menu ---");
+            System.out.println("1. Add Student");
+            System.out.println("2. Edit Student");
+            System.out.println("3. Remove Student");
+            System.out.println("4. Add Grade");
+            System.out.println("5. Display Grade Reports");
+            System.out.println("0. Exit");
+            System.out.print("Enter choice: ");
+            choice = sc.nextInt();
+            sc.nextLine(); // consume newline
+
+            switch (choice) {
+                case 1:
+                    System.out.print("Enter student ID: ");
+                    String id = sc.nextLine();
+                    System.out.print("Enter student name: ");
+                    String name = sc.nextLine();
+                    gradebook.addStudent(id, name);
+                    break;
+                case 2:
+                    System.out.print("Enter student ID to edit: ");
+                    String editId = sc.nextLine();
+                    System.out.print("Enter new name: ");
+                    String newName = sc.nextLine();
+                    gradebook.editStudent(editId, newName);
+                    break;
+                case 3:
+                    System.out.print("Enter student ID to remove: ");
+                    String removeId = sc.nextLine();
+                    gradebook.removeStudent(removeId);
+                    break;
+                case 4:
+                    System.out.print("Enter student ID: ");
+                    String gradeId = sc.nextLine();
+                    System.out.print("Enter subject: ");
+                    String subject = sc.nextLine();
+                    System.out.print("Enter grade: ");
+                    double grade = sc.nextDouble();
+                    sc.nextLine(); // consume newline
+                    gradebook.addGrade(gradeId, subject, grade);
+                    break;
+                case 5:
+                    gradebook.displayAllReports();
+                    break;
+                case 0:
+                    System.out.println("Exiting...");
+                    break;
+                default:
+                    System.out.println("Invalid choice.");
+            }
+        } while (choice != 0);
+
+        sc.close();
+    }
+}
